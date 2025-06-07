@@ -19,6 +19,8 @@ model Kullanici {
   isim      String?
   resim     String?
   mesajlar  Mesaj[]
+  isAdmin   Boolean   @default(false)
+  password  String?   // Admin girişi için şifre eklendi
   createdAt DateTime  @default(now())
 }
 
@@ -38,4 +40,31 @@ model Etkinlik {
   konum       String?
   resimUrl    String?
   createdAt   DateTime @default(now())
+}
+
+model AnaSayfaIcerik {
+  id            Int      @id @default(autoincrement())
+  heroBaslik    String
+  heroAltBaslik String
+  servisler     Servis[]
+  istatistikler Istatistik[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Servis {
+  id            Int            @id @default(autoincrement())
+  baslik        String
+  aciklama      String
+  ikonUrl       String
+  anaSayfa      AnaSayfaIcerik @relation(fields: [anaSayfaId], references: [id])
+  anaSayfaId    Int
+}
+
+model Istatistik {
+  id            Int            @id @default(autoincrement())
+  rakam         String
+  aciklama      String
+  anaSayfa      AnaSayfaIcerik @relation(fields: [anaSayfaId], references: [id])
+  anaSayfaId    Int
 }

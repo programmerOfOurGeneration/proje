@@ -1,103 +1,133 @@
+'use client'
 import Image from "next/image";
 import styles from "./page.module.css";
 import Link from "next/link";
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 
 export default function Home() {
+  const { data: session } = useSession();
+  const [icerik, setIcerik] = useState({
+    heroBaslik: "Hayallerinizi Sahneliyoruz",
+    heroAltBaslik: "Profesyonel sahne tasarımı ve teknik prodüksiyon hizmetleri",
+    servisler: [
+      {
+        baslik: "Sahne Tasarımı",
+        aciklama: "Konser, tiyatro ve özel etkinlikler için yaratıcı sahne tasarımları",
+        ikonUrl: "/stage.svg"
+      },
+      {
+        baslik: "Işık Sistemleri",
+        aciklama: "Modern ışık teknolojileri ile profesyonel aydınlatma çözümleri",
+        ikonUrl: "/light.svg"
+      },
+      {
+        baslik: "Ses Sistemleri",
+        aciklama: "Yüksek kaliteli ses sistemleri ve akustik tasarım",
+        ikonUrl: "/sound.svg"
+      }
+    ],
+    istatistikler: [
+      {
+        rakam: "500+",
+        aciklama: "Tamamlanan Proje"
+      },
+      {
+        rakam: "50+",
+        aciklama: "Uzman Ekip"
+      },
+      {
+        rakam: "15+",
+        aciklama: "Yıllık Deneyim"
+      }
+    ]
+  });
+
+  useEffect(() => {
+    const getIcerik = async () => {
+      try {
+        const response = await fetch('/api/admin/icerik');
+        const data = await response.json();
+        if (data && !data.error) {
+          setIcerik(data);
+        }
+      } catch (error) {
+        console.error('İçerik yüklenemedi:', error);
+      }
+    };
+
+    getIcerik();
+  }, []);
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
         <nav className={styles.nav}>
-          <Link href="/">Ana Sayfa</Link>
-          <Link href="/etkinlikler">Etkinlikler</Link>
-          <Link href="/sohbet">Sohbet</Link>
+          <Link href="/" className={styles.logo}>
+            StageDesign
+          </Link>
+          <div className={styles.navLinks}>
+            <Link href="/">Ana Sayfa</Link>
+            <Link href="/etkinlikler">Projelerimiz</Link>
+            <Link href="/sohbet">İletişim</Link>
+            {session?.user?.isAdmin ? (
+              <Link href="/admin" className={styles.adminLink}>
+                Admin Panel
+              </Link>
+            ) : (
+              <Link href="/login" className={styles.loginLink}>
+                {session?.user ? 'Hesabım' : 'Giriş Yap'}
+              </Link>
+            )}
+          </div>
         </nav>
 
         <section className={styles.hero}>
-          <h1>Hoş Geldiniz</h1>
-          <p>Portföyümüzü ve etkinliklerimizi keşfedin</p>
+          <div className={styles.heroContent}>
+            <h1>{icerik.heroBaslik}</h1>
+            <p>{icerik.heroAltBaslik}</p>
+            <Link href="/etkinlikler" className={styles.cta}>
+              Projelerimizi İnceleyin
+            </Link>
+          </div>
+          <div className={styles.heroOverlay}></div>
         </section>
 
-        <section className={styles.features}>
-          <div className={styles.feature}>
-            <h2>Etkinlikler</h2>
-            <p>Geçmiş ve gelecek etkinliklerimizi inceleyin</p>
-          </div>
-          <div className={styles.feature}>
-            <h2>Sohbet</h2>
-            <p>Gmail hesabınızla giriş yaparak bizimle iletişime geçin</p>
+        <section className={styles.services}>
+          <h2>Hizmetlerimiz</h2>
+          <div className={styles.serviceGrid}>
+            {icerik.servisler.map((servis, index) => (
+              <div key={index} className={styles.serviceCard}>
+                <Image
+                  src={servis.ikonUrl}
+                  alt={servis.baslik}
+                  width={64}
+                  height={64}
+                />
+                <h3>{servis.baslik}</h3>
+                <p>{servis.aciklama}</p>
+              </div>
+            ))}
           </div>
         </section>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
+        <section className={styles.stats}>
+          {icerik.istatistikler.map((istatistik, index) => (
+            <div key={index} className={styles.statCard}>
+              <h3>{istatistik.rakam}</h3>
+              <p>{istatistik.aciklama}</p>
+            </div>
+          ))}
+        </section>
+
+        <section className={styles.contact}>
+          <h2>Vizyonunuzu Gerçeğe Dönüştürelim</h2>
+          <p>Projeniz için profesyonel çözümler sunalım</p>
+          <Link href="/sohbet" className={styles.ctaSecondary}>
+            Bizimle İletişime Geçin
+          </Link>
+        </section>
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

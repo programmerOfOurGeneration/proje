@@ -1,0 +1,171 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0070f3 0%, #00a6ed 100%);
+  padding: 1rem;
+}
+
+.loginBox {
+  display: flex;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 900px;
+  min-height: 600px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.leftSide {
+  flex: 1;
+  background: #f8f9fa;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.leftSide h2 {
+  margin: 1.5rem 0 0.5rem;
+  color: #333;
+  font-size: 2rem;
+}
+
+.leftSide p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 1rem;
+}
+
+.rightSide {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+}
+
+.form {
+  width: 100%;
+}
+
+.form h1 {
+  margin-bottom: 2rem;
+  color: #333;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e1e1e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.formGroup input:focus {
+  border-color: #0070f3;
+  outline: none;
+}
+
+.loginButton {
+  width: 100%;
+  padding: 0.875rem;
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.loginButton:hover {
+  background: #0051a2;
+}
+
+.divider {
+  margin: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.divider span {
+  padding: 0 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.googleButton {
+  width: 100%;
+  padding: 0.875rem;
+  background: white;
+  color: #333;
+  border: 2px solid #e1e1e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.googleButton:hover {
+  background: #f5f5f5;
+}
+
+.error {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .loginBox {
+    flex-direction: column;
+  }
+
+  .leftSide {
+    padding: 2rem;
+  }
+
+  .rightSide {
+    padding: 2rem;
+  }
+}

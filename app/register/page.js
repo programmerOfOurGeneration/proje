@@ -1,0 +1,123 @@
+'use client';
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import styles from './page.module.css';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+export default function RegisterPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Kayıt başarılı, giriş yap
+        const result = await signIn('credentials', {
+          email,
+          password,
+          redirect: false,
+        });
+
+        if (result.error) {
+          setError('Giriş yapılırken bir hata oluştu');
+        } else {
+          router.push('/sohbet');
+        }
+      } else {
+        setError(data.error || 'Kayıt olurken bir hata oluştu');
+      }
+    } catch (error) {
+      setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.loginBox}>
+        <div className={styles.leftSide}>
+          <Image 
+            src="/stage.svg" 
+            alt="StageDesign Logo" 
+            width={100} 
+            height={100} 
+            className={styles.logo}
+          />
+          <h2>StageDesign</h2>
+          <p>Üyelik Oluştur</p>
+        </div>
+        
+        <div className={styles.rightSide}>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <h1>Kayıt Ol</h1>
+            {error && <div className={styles.error}>{error}</div>}
+            
+            <div className={styles.formGroup}>
+              <label htmlFor="name">Ad Soyad</label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                placeholder="Adınız ve soyadınız"
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="email">E-posta</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="E-posta adresiniz"
+              />
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label htmlFor="password">Şifre</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Şifreniz"
+                minLength={6}
+              />
+            </div>
+
+            <button type="submit" className={styles.loginButton}>
+              Kayıt Ol
+            </button>
+
+            <div className={styles.registerLink}>
+              Zaten hesabınız var mı? <Link href="/login">Giriş Yapın</Link>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -69,7 +69,7 @@ export default function Home() {
           <div className={styles.navLinks}>
             <Link href="/">Ana Sayfa</Link>
             <Link href="/etkinlikler">Projelerimiz</Link>
-            <Link href="/sohbet">İletişim</Link>
+            <Link href="/iletisim">İletişim</Link>
             {session?.user?.isAdmin ? (
               <Link href="/admin" className={styles.adminLink}>
                 Admin Panel
@@ -118,12 +118,10 @@ export default function Home() {
               <p>{istatistik.aciklama}</p>
             </div>
           ))}
-        </section>
-
-        <section className={styles.contact}>
+        </section>          <section className={styles.contact}>
           <h2>Vizyonunuzu Gerçeğe Dönüştürelim</h2>
           <p>Projeniz için profesyonel çözümler sunalım</p>
-          <Link href="/sohbet" className={styles.ctaSecondary}>
+          <Link href="/login" className={styles.ctaSecondary}>
             Bizimle İletişime Geçin
           </Link>
         </section>

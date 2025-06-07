@@ -104,8 +104,19 @@ export default function AdminPanel() {
 
   return (
     <div className={styles.container}>
-      <h1>Admin Paneli</h1>
+      <h1>Admin Panel</h1>
+      
+      <div className={styles.adminMenu}>
+        <h2>Yönetim Menüsü</h2>
+        <button 
+          className={styles.menuButton}
+          onClick={() => router.push('/admin/iletisim')}>
+          İletişim Bilgilerini Düzenle
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit} className={styles.form}>
+        <h2>Ana Sayfa İçerik Yönetimi</h2>
         <section className={styles.section}>
           <h2>Hero Bölümü</h2>
           <div className={styles.formGroup}>

@@ -68,3 +68,16 @@ model Istatistik {
   anaSayfa      AnaSayfaIcerik @relation(fields: [anaSayfaId], references: [id])
   anaSayfaId    Int
 }
+
+model IletisimBilgileri {
+  id              Int      @id @default(autoincrement())
+  firmaAdi        String
+  hakkimizda     String   
+  adres          String
+  telefon        String
+  email          String
+  calismaSaatleri String
+  sosyalMedya    Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}

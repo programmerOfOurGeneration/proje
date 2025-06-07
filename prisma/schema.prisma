@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Kullanici {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  isim      String?
+  resim     String?
+  mesajlar  Mesaj[]
+  createdAt DateTime  @default(now())
+}
+
+model Mesaj {
+  id         Int      @id @default(autoincrement())
+  icerik     String
+  kullanici  Kullanici @relation(fields: [kullaniciId], references: [id])
+  kullaniciId Int
+  createdAt  DateTime @default(now())
+}
+
+model Etkinlik {
+  id          Int      @id @default(autoincrement())
+  baslik      String
+  aciklama    String
+  tarih       DateTime
+  konum       String?
+  resimUrl    String?
+  createdAt   DateTime @default(now())
+}

@@ -398,6 +398,53 @@ a.secondary {
   background: #333;
 }
 
+.authButtons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.loginLink,
+.registerLink,
+.adminLink {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.loginLink {
+  background-color: transparent;
+  color: #0070f3;
+  border: 1px solid #0070f3;
+}
+
+.loginLink:hover {
+  background-color: rgba(0, 112, 243, 0.1);
+}
+
+.registerLink {
+  background-color: #0070f3;
+  color: white;
+  border: 1px solid #0070f3;
+}
+
+.registerLink:hover {
+  background-color: #0051b3;
+  border-color: #0051b3;
+}
+
+.adminLink {
+  background-color: #2d3748;
+  color: white;
+  border: 1px solid #2d3748;
+}
+
+.adminLink:hover {
+  background-color: #1a202c;
+  border-color: #1a202c;
+}
+
 @media (max-width: 768px) {
   .hero h1 {
     font-size: 3rem;

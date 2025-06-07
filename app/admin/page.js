@@ -65,7 +65,6 @@ export default function AdminPanel() {
       getIcerik()
     }
   }, [session])
-
   useEffect(() => {
     if (status === 'unauthenticated' || (status === 'authenticated' && !session?.user?.isAdmin)) {
       router.push('/')
@@ -73,24 +72,62 @@ export default function AdminPanel() {
   }, [status, session, router])
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
+      // Validate required fields
+      if (!icerik.heroBaslik.trim() || !icerik.heroAltBaslik.trim()) {
+        alert('Hero başlık ve alt başlık zorunludur');
+        return;
+      }
+
+      // Validate services
+      if (!icerik.servisler.every(s => s.baslik.trim() && s.aciklama.trim())) {
+        alert('Tüm servislerin başlık ve açıklamaları zorunludur');
+        return;
+      }
+
+      // Validate statistics
+      if (!icerik.istatistikler.every(i => i.rakam.trim() && i.aciklama.trim())) {
+        alert('Tüm istatistiklerin rakam ve açıklamaları zorunludur');
+        return;
+      }
+
+      // Prepare form data with trimmed values
+      const formData = {
+        heroBaslik: icerik.heroBaslik.trim(),
+        heroAltBaslik: icerik.heroAltBaslik.trim(),
+        servisler: icerik.servisler.map(servis => ({
+          baslik: servis.baslik.trim(),
+          aciklama: servis.aciklama.trim(),
+          ikonUrl: servis.ikonUrl
+        })),
+        istatistikler: icerik.istatistikler.map(istatistik => ({
+          rakam: istatistik.rakam.trim(),
+          aciklama: istatistik.aciklama.trim()
+        }))
+      };
+
       const response = await fetch('/api/admin/icerik', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(icerik),
-      })
+        body: JSON.stringify(formData),
+      });
 
-      if (response.ok) {
-        alert('İçerik başarıyla güncellendi!')
-      } else {
-        throw new Error('İçerik güncellenemedi')
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'İçerik güncellenemedi');
       }
+
+      // Update the local state with the server response
+      setIcerik(data);
+      alert('İçerik başarıyla güncellendi!');
+      
     } catch (error) {
-      console.error('İçerik güncellenemedi:', error)
-      alert('İçerik güncellenirken bir hata oluştu')
+      console.error('İçerik güncellenemedi:', error);
+      alert('İçerik güncellenirken bir hata oluştu: ' + error.message);
     }
   }
 
@@ -108,6 +145,11 @@ export default function AdminPanel() {
       
       <div className={styles.adminMenu}>
         <h2>Yönetim Menüsü</h2>
+        <button 
+          className={styles.menuButton}
+          onClick={() => router.push('/admin/etkinlikler')}>
+          Etkinlikleri Yönet
+        </button>
         <button 
           className={styles.menuButton}
           onClick={() => router.push('/admin/iletisim')}>

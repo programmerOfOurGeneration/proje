@@ -1,55 +1,132 @@
 .container {
+  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
 }
 
 .container h1 {
-  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  color: #1a202c;
   text-align: center;
+  margin-bottom: 2rem;
 }
 
 .eventGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 2rem;
+  margin-top: 2rem;
 }
 
 .eventCard {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: white;
+  border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
 }
 
 .eventCard:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.imageContainer {
+  width: 100%;
+  height: 220px;
+  position: relative;
+  background: #f8fafc;
 }
 
 .eventImage {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
 }
 
-.eventCard h2 {
-  padding: 1rem;
-  margin: 0;
-  color: #333;
+.noImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e2e8f0;
+  color: #94a3b8;
+  font-size: 0.9rem;
 }
 
-.eventCard p {
-  padding: 0 1rem;
-  color: #666;
+.cardContent {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cardContent h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: #1a202c;
+  line-height: 1.3;
+}
+
+.description {
+  color: #4a5568;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .eventDetails {
-  padding: 1rem;
-  background: #f7f7f7;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  color: #718096;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.eventDetails p {
-  margin: 0.5rem 0;
-  padding: 0;
+.location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+}
+
+.readMore {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #3182ce;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.eventCard:hover .readMore {
+  color: #2c5282;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .container h1 {
+    font-size: 2rem;
+  }
+
+  .eventGrid {
+    grid-template-columns: 1fr;
+  }
 }

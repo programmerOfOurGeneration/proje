@@ -74,10 +74,19 @@ export default function Home() {
               <Link href="/admin" className={styles.adminLink}>
                 Admin Panel
               </Link>
-            ) : (
+            ) : session?.user ? (
               <Link href="/login" className={styles.loginLink}>
-                {session?.user ? 'Hesabım' : 'Giriş Yap'}
+                Hesabım
               </Link>
+            ) : (
+              <div className={styles.authButtons}>
+                <Link href="/login" className={styles.loginLink}>
+                  Giriş Yap
+                </Link>
+                <Link href="/register" className={styles.registerLink}>
+                  Kayıt Ol
+                </Link>
+              </div>
             )}
           </div>
         </nav>

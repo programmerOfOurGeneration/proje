@@ -36,10 +36,32 @@ model Etkinlik {
   id          Int      @id @default(autoincrement())
   baslik      String
   aciklama    String
+  icerik      String
   tarih       DateTime
   konum       String?
   resimUrl    String?
-  createdAt   DateTime @default(now())
+  resimler    EtkinlikResim[]
+  videolar    EtkinlikVideo[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model EtkinlikResim {
+  id          Int       @id @default(autoincrement())
+  url         String
+  aciklama    String?
+  etkinlik    Etkinlik  @relation(fields: [etkinlikId], references: [id], onDelete: Cascade)
+  etkinlikId  Int
+  createdAt   DateTime  @default(now())
+}
+
+model EtkinlikVideo {
+  id          Int       @id @default(autoincrement())
+  url         String
+  aciklama    String?
+  etkinlik    Etkinlik  @relation(fields: [etkinlikId], references: [id], onDelete: Cascade)
+  etkinlikId  Int
+  createdAt   DateTime  @default(now())
 }
 
 model AnaSayfaIcerik {

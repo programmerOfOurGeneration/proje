@@ -89,3 +89,24 @@
   background: #0070f3;
   color: white;
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .iletisimBilgileri {
+    grid-template-columns: 1fr;
+  }
+
+  .sosyalIkonlar {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .sosyalIkonlar a {
+    width: 100%;
+    text-align: center;
+  }
+}

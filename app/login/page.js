@@ -1,15 +1,28 @@
 'use client';
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import styles from './page.module.css';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  // Oturum durumunu kontrol et
+  useEffect(() => {
+    if (session) {
+      if (session.user.isAdmin) {
+        router.replace('/admin');
+      } else {
+        router.replace('/sohbet');
+      }
+    }
+  }, [session, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,17 +35,6 @@ export default function LoginPage() {
 
       if (result.error) {
         setError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
-      } else {
-        // Admin kontrolü
-        const userResponse = await fetch('/api/admin/check');
-        const userData = await userResponse.json();
-        
-        if (userData.isAdmin) {
-          router.push('/admin');
-        } else {
-          // Normal kullanıcıları sohbet sayfasına yönlendir
-          router.push('/sohbet');
-        }
       }
     } catch (error) {
       setError('Bir hata oluştu. Lütfen tekrar deneyin.');
@@ -40,8 +42,17 @@ export default function LoginPage() {
   };
 
   const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/sohbet' });  // Normal kullanıcılar için sohbet sayfasına yönlendir
+    signIn('google');  // Yönlendirmeyi middleware ve session callback'ler halledecek
   };
+
+  // Yükleme durumunda veya oturum açıkken loading göster
+  if (status === 'loading') {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Yükleniyor...</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -108,6 +119,10 @@ export default function LoginPage() {
               />
               Google ile Giriş Yap
             </button>
+
+            <div className={styles.registerLink}>
+              Hesabınız yok mu? <Link href="/register">Kayıt Olun</Link>
+            </div>
           </form>
         </div>
       </div>

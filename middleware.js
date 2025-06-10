@@ -3,7 +3,15 @@ import { getToken } from 'next-auth/jwt'
 
 export async function middleware(request) {
   const token = await getToken({ req: request })
-  
+  const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
+                     request.nextUrl.pathname.startsWith('/register')
+
+  // Eğer oturum açıksa, login ve register sayfalarına erişimi engelle
+  if (isAuthPage && token) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  // Admin sayfaları kontrolü
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (!token) {
       return NextResponse.redirect(new URL('/login', request.url))
@@ -21,9 +29,19 @@ export async function middleware(request) {
     }
   }
 
+  // Korumalı sayfalar kontrolü (örn: sohbet)
+  if (request.nextUrl.pathname.startsWith('/sohbet') && !token) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/admin/:path*']
+  matcher: [
+    '/admin/:path*',
+    '/sohbet/:path*',
+    '/login',
+    '/register'
+  ]
 }

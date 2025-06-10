@@ -13,17 +13,6 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model Kullanici {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  isim      String?
-  resim     String?
-  mesajlar  Mesaj[]
-  isAdmin   Boolean   @default(false)
-  password  String?   // Admin girişi için şifre eklendi
-  createdAt DateTime  @default(now())
-}
-
 model Mesaj {
   id         Int      @id @default(autoincrement())
   icerik     String
@@ -102,4 +91,28 @@ model IletisimBilgileri {
   sosyalMedya    Json?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model OzelMesaj {
+  id          Int      @id @default(autoincrement())
+  icerik      String
+  gonderen    Kullanici @relation("GonderilenMesajlar", fields: [gonderenId], references: [id])
+  gonderenId  Int
+  alici       Kullanici @relation("AlinanMesajlar", fields: [aliciId], references: [id])
+  aliciId     Int
+  okundu      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}
+
+model Kullanici {
+  id                Int         @id @default(autoincrement())
+  email             String      @unique
+  isim              String?
+  resim             String?
+  mesajlar          Mesaj[]
+  gonderdigiMesajlar OzelMesaj[] @relation("GonderilenMesajlar")
+  aldigiMesajlar    OzelMesaj[] @relation("AlinanMesajlar")
+  isAdmin           Boolean     @default(false)
+  password          String?   // Admin girişi için şifre eklendi
+  createdAt         DateTime    @default(now())
 }

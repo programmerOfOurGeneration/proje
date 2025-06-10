@@ -3,10 +3,10 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import Link from "next/link";
 import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Home() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [icerik, setIcerik] = useState({
     heroBaslik: "Hayallerinizi Sahneliyoruz",
     heroAltBaslik: "Profesyonel sahne tasarımı ve teknik prodüksiyon hizmetleri",
@@ -59,6 +59,10 @@ export default function Home() {
     getIcerik();
   }, []);
 
+  const handleSignOut = async () => {
+    await signOut({ redirect: true, callbackUrl: '/' });
+  };
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -70,14 +74,22 @@ export default function Home() {
             <Link href="/">Ana Sayfa</Link>
             <Link href="/etkinlikler">Projelerimiz</Link>
             <Link href="/iletisim">İletişim</Link>
-            {session?.user?.isAdmin ? (
-              <Link href="/admin" className={styles.adminLink}>
-                Admin Panel
-              </Link>
+            {status === 'loading' ? (
+              <div className={styles.loadingDot}></div>
             ) : session?.user ? (
-              <Link href="/login" className={styles.loginLink}>
-                Hesabım
-              </Link>
+              <>
+                {session.user.isAdmin && (
+                  <Link href="/admin" className={styles.adminLink}>
+                    Admin Panel
+                  </Link>
+                )}
+                <Link href="/sohbet" className={styles.accountLink}>
+                  Sohbet
+                </Link>
+                <button onClick={handleSignOut} className={styles.signOutButton}>
+                  Çıkış Yap
+                </button>
+              </>
             ) : (
               <div className={styles.authButtons}>
                 <Link href="/login" className={styles.loginLink}>

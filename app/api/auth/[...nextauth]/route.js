@@ -48,10 +48,19 @@ const handler = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          isAdmin: false // Google ile giriş yapan kullanıcılar varsayılan olarak admin değil
+        }
+      }
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.isAdmin = user.isAdmin
       }
@@ -64,7 +73,13 @@ const handler = NextAuth({
       return session
     },
     async redirect({ url, baseUrl }) {
-      // Admin kontrolü yapıp, yönlendirme kararı veriyoruz
+      // URL giriş sonrası yönlendirme için callback URL içeriyorsa onu kullan
+      if (url.includes('callbackUrl=')) {
+        const callbackUrl = new URL(url).searchParams.get('callbackUrl')
+        if (callbackUrl.startsWith(baseUrl)) return callbackUrl
+      }
+
+      // Admin rotaları için özel kontrol
       if (url.startsWith('/admin')) {
         const session = await getServerSession()
         if (session?.user?.isAdmin) {
@@ -72,6 +87,8 @@ const handler = NextAuth({
         }
         return baseUrl
       }
+
+      // Varsayılan olarak ana sayfaya yönlendir
       return url.startsWith(baseUrl) ? url : baseUrl
     }
   },
@@ -80,8 +97,10 @@ const handler = NextAuth({
     error: '/login',
   },
   session: {
-    strategy: "jwt"
-  }
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 gün
+  },
+  secret: process.env.NEXTAUTH_SECRET
 })
 
 export { handler as GET, handler as POST }

@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import styles from './page.module.css';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -11,10 +11,26 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  // Oturum durumunu kontrol et
+  useEffect(() => {
+    if (session) {
+      if (session.user.isAdmin) {
+        router.replace('/admin');
+      } else {
+        router.replace('/sohbet');
+      }
+    }
+  }, [session, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -40,16 +56,26 @@ export default function RegisterPage() {
 
         if (result.error) {
           setError('Giriş yapılırken bir hata oluştu');
-        } else {
-          router.push('/sohbet');
         }
+        // Yönlendirmeyi useEffect ile session kontrolü yapacak
       } else {
         setError(data.error || 'Kayıt olurken bir hata oluştu');
       }
     } catch (error) {
       setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Yükleme durumunda loading göster
+  if (status === 'loading' || isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Yükleniyor...</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -80,6 +106,7 @@ export default function RegisterPage() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="Adınız ve soyadınız"
+                minLength={2}
               />
             </div>
 
@@ -108,11 +135,15 @@ export default function RegisterPage() {
               />
             </div>
 
-            <button type="submit" className={styles.loginButton}>
-              Kayıt Ol
+            <button 
+              type="submit" 
+              className={styles.loginButton}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Kaydediliyor...' : 'Kayıt Ol'}
             </button>
 
-            <div className={styles.registerLink}>
+            <div className={styles.loginLink}>
               Zaten hesabınız var mı? <Link href="/login">Giriş Yapın</Link>
             </div>
           </form>

@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 
 const prisma = new PrismaClient();
 
-// Adminleri listele
+// Kullanıcıları listele
 export async function GET() {
   try {
     const session = await getServerSession();
@@ -12,22 +12,31 @@ export async function GET() {
       return NextResponse.json({ error: 'Yetkilendirme gerekli' }, { status: 401 });
     }
 
-    const adminler = await prisma.kullanici.findMany({
+    // Mevcut kullanıcıyı bul
+    const currentUser = await prisma.kullanici.findUnique({
       where: {
-        isAdmin: true
-      },
+        email: session.user.email
+      }
+    });
+
+    // Admin ise tüm kullanıcıları getir, değilse sadece adminleri getir
+    const kullanicilar = await prisma.kullanici.findMany({
+      where: currentUser.isAdmin ? 
+        { id: { not: currentUser.id } } : // Admin tüm kullanıcıları görebilir (kendisi hariç)
+        { isAdmin: true }, // Normal kullanıcı sadece adminleri görebilir
       select: {
         id: true,
         isim: true,
         email: true,
-        resim: true
+        resim: true,
+        isAdmin: true
       }
     });
 
-    return NextResponse.json(adminler);
+    return NextResponse.json(kullanicilar);
   } catch (error) {
-    console.error('Adminler listelenemedi:', error);
-    return NextResponse.json({ error: 'Adminler listelenemedi' }, { status: 500 });
+    console.error('Kullanıcılar listelenemedi:', error);
+    return NextResponse.json({ error: 'Kullanıcılar listelenemedi' }, { status: 500 });
   }
 }
 
@@ -60,7 +69,9 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Alıcı bulunamadı' }, { status: 404 });
     }
 
-    // Admin olmayan kullanıcılar sadece adminlere mesaj gönderebilir
+    // Mesajlaşma kuralları:
+    // 1. Admin herkesle mesajlaşabilir
+    // 2. Normal kullanıcı sadece adminlerle mesajlaşabilir
     if (!gonderen.isAdmin && !alici.isAdmin) {
       return NextResponse.json({ error: 'Sadece adminlerle mesajlaşabilirsiniz' }, { status: 403 });
     }

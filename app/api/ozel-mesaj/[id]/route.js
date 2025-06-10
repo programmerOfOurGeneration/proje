@@ -11,31 +11,29 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Yetkilendirme gerekli' }, { status: 401 });
     }
 
-    const kullanici = await prisma.kullanici.findUnique({
+    const kullaniciId = parseInt(params.id);
+    
+    // Mevcut kullanıcıyı bul
+    const currentUser = await prisma.kullanici.findUnique({
       where: {
         email: session.user.email
       }
     });
 
-    const digerKullaniciId = parseInt(params.id);
-    if (isNaN(digerKullaniciId)) {
-      return NextResponse.json({ error: 'Geçersiz ID' }, { status: 400 });
-    }
-
-    // Mesajları getir (gönderilen ve alınan)
+    // İki yönlü mesajları getir (gönderilen ve alınan)
     const mesajlar = await prisma.ozelMesaj.findMany({
       where: {
         OR: [
-          {
+          { 
             AND: [
-              { gonderenId: kullanici.id },
-              { aliciId: digerKullaniciId }
+              { gonderenId: currentUser.id },
+              { aliciId: kullaniciId }
             ]
           },
-          {
+          { 
             AND: [
-              { gonderenId: digerKullaniciId },
-              { aliciId: kullanici.id }
+              { gonderenId: kullaniciId },
+              { aliciId: currentUser.id }
             ]
           }
         ]
@@ -64,22 +62,20 @@ export async function GET(request, { params }) {
     });
 
     // Okunmamış mesajları okundu olarak işaretle
-    if (mesajlar.length > 0) {
-      await prisma.ozelMesaj.updateMany({
-        where: {
-          aliciId: kullanici.id,
-          gonderenId: digerKullaniciId,
-          okundu: false
-        },
-        data: {
-          okundu: true
-        }
-      });
-    }
+    await prisma.ozelMesaj.updateMany({
+      where: {
+        aliciId: currentUser.id,
+        gonderenId: kullaniciId,
+        okundu: false
+      },
+      data: {
+        okundu: true
+      }
+    });
 
     return NextResponse.json(mesajlar);
   } catch (error) {
-    console.error('Mesajlar alınamadı:', error);
-    return NextResponse.json({ error: 'Mesajlar alınamadı' }, { status: 500 });
+    console.error('Mesajlar getirilemedi:', error);
+    return NextResponse.json({ error: 'Mesajlar getirilemedi' }, { status: 500 });
   }
 }

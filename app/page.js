@@ -68,7 +68,7 @@ export default function Home() {
       <main className={styles.main}>
         <nav className={styles.nav}>
           <Link href="/" className={styles.logo}>
-            StageDesign
+            Onpases
           </Link>
           <div className={styles.navLinks}>
             <Link href="/">Ana Sayfa</Link>
